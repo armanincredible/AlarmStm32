@@ -33,13 +33,13 @@ endif
 # Files
 #-------
 
-SOURCES = \
-	entry.S \
-	uart.c \
-	main.c 
-
+SOURCES = $(sort $(wildcard *.c))
+SOURCES += entry.S
 OBJECTS_HALFWAY_DONE = $(SOURCES:%.c=build/%.o)
 OBJECTS              = $(OBJECTS_HALFWAY_DONE:%.S=build/%.o)
+
+INCLUDE_DIRS := .
+CFLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 
 EXECUTABLE_FLASH = build/uart.elf
 BINARY_FLASH     = build/uart.bin
@@ -48,7 +48,7 @@ BINARY_FLASH     = build/uart.bin
 # Build scripts
 #---------------
 
-all: $(EXECUTABLE_FLASH) $(BINARY_FLASH) $(SOURCES)
+all: makedir $(EXECUTABLE_FLASH) $(BINARY_FLASH) $(SOURCES)
 
 $(EXECUTABLE_FLASH): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
@@ -57,16 +57,24 @@ $(BINARY_FLASH): $(EXECUTABLE_FLASH)
 	arm-none-eabi-objcopy -O binary $< $@
 
 build/%.o: %.c
-	@mkdir -p build
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 build/%.o: %.S
-	@mkdir -p build
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-clean:
-	rm -rf build
+makedir:
+ifeq ($(OS),Windows_NT)
+	mkdir build
+else
+	@mkdir -p build
+endif
 
+clean:
+ifeq ($(OS),Windows_NT)
+	rmdir /s build
+else
+	rm -rf build
+endif
 #----------------------
 # Hardware interaction
 #----------------------

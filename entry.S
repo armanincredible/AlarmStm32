@@ -58,9 +58,12 @@ __bss_end_vma_val:
 .word __bss_end_vma
 
 .section .vector_table
-.word __stack_start    // Initial SP
-.word __reset_handler  // Reset Handler
-.word __exc_handler    // Hard Fault Handler
-.word __exc_handler    // Memory Management Fault Handler
-.word __exc_handler    // Bus Fault Handler
-.word __exc_handler    // Usage Fault Handler
+.word __stack_start         // Initial SP
+.word __reset_handler       // Reset Handler
+.word __exc_handler         // NMI Handler
+.word __exc_handler         // Hard Fault Handler
+.fill 7, 4, 0x00            // Reserved
+.word __exc_handler         // SVCall
+.fill 2, 4, 0x00            // Reserved
+.word __exc_handler         // PendSV
+.word systick_handler       // SysTick
