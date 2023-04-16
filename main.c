@@ -8,6 +8,7 @@
 #include <inc/rcc.h>
 #include <inc/systick.h>
 #include <inc/sleep.h>
+#include <inc/engine.h>
 //=========================================================
 
 #define CPU_FREQENCY 48000000U // CPU frequency: 48 MHz
@@ -144,47 +145,6 @@ void systick_handler(void)
 
 }
 
-typedef struct Engine
-{
-    uint32_t GPIOx;
-    uint8_t pin;
-}engine_t;
-
-int default_output_pin_init(unsigned int port, unsigned int pin)
-{
-    if (port < GPIOA || port > GPIOF)
-        return -1;
-
-    if (pin > 15)
-        return -1;
-
-    uint8_t bit = REG_RCC_AHBENR_IOPAEN + (port - GPIOA) / GPIO_offs;
-    SET_BIT(REG_RCC_AHBENR, bit);
-
-    SET_GPIO_IOMODE(port, pin, GPIO_IOMODE_ANALOG_MODE);
-    SET_GPIO_OTYPE(port, pin, GPIO_OTYPE_PUSH_PULL);
-
-    return 0;
-}
-
-void engine_init(engine_t* engine, int port, int pin)
-{
-    if (!engine)
-        return;
-    
-    engine->GPIOx = port;
-    engine->pin   = pin;
-
-    default_output_pin_init(engine->GPIOx, engine->pin);
-    
-    return;
-}
-
-void engine_on(engine_t* engine)
-{
-    GPIO_BSRR_SET_PIN(engine->GPIOx, engine->pin);
-    return;
-}
 //------
 // Main
 //------
@@ -195,28 +155,25 @@ int main(void)
     board_gpio_init();
     //systick_init(SYSTICK_PERIOD_US);
 
-    //engine_t engine = {};
-    //engine_init(&engine, GPIOC, 11);
-    //engine_on(&engine);
-    uint8_t bit = REG_RCC_AHBENR_IOPAEN + (GPIOC - GPIOA) / GPIO_offs;
+    engine_t engine = {};
+    engine_init(&engine, GPIOC, 11);
+    engine_on(&engine);
+
+    
+    /*uint8_t bit = REG_RCC_AHBENR_IOPAEN + (GPIOC - GPIOA) / GPIO_offs;
     SET_BIT(REG_RCC_AHBENR, bit);
     SET_GPIO_IOMODE(GPIOC, 11, GPIO_IOMODE_GEN_PURPOSE_OUTPUT);
     //SET_GPIO_OTYPE(GPIOC, 11, GPIO_OTYPE_OPEN_DRAIN);
     SET_GPIO_OTYPE(GPIOC, 11, GPIO_OTYPE_PUSH_PULL);
-    GPIO_BSRR_SET_PIN(GPIOC, 11);
-    //GPIO_BRR_RESET_PIN(GPIOC, 11);
-
+    GPIO_BSRR_SET_PIN(GPIOC, 11);*/
+    
+    
     while (1)
     {
-        //GPIO_BSRR_SET_PIN(GPIOC, 11);
-
-        //GPIO_BSRR_SET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
         more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
         more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
         more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
-
-        //GPIO_BRR_RESET_PIN(GPIOC, 11);
-        //engine_on(&engine);
-        //GPIO_BRR_RESET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
     }
 }

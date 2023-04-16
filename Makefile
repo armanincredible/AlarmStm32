@@ -6,9 +6,6 @@ CC = arm-none-eabi-gcc
 
 CFLAGS = \
 	-std=c18 \
-	-Wall \
-	-Wextra \
-	-Werror \
 	-march=armv6-m \
 	-mcpu=cortex-m0
 
