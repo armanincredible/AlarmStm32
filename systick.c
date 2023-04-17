@@ -63,24 +63,19 @@ extern engine_t engine;
 
 void systick_handler(void)
 {
-    static unsigned handler_ticks = 0U;
+    static uint64_t handler_ticks = 0U;
     handler_ticks += 1U;
     static bool engine_is_on = false;
+    static bool alarm_is_on = false;
 
-
-    if (handler_ticks % 1000000 * SYSTICK_FREQ)
+    if (handler_ticks == 100000)
     {
-        if (!engine_is_on)
-        {
-            engine_on(&engine);
-            engine_is_on = true;
-        }
-        else
-        {
-            //engine_off(&engine);
-            engine_is_on = false;
-        }
+        alarm_is_on = true;
     }
 
-    //buzzer_work(&buzzer, handler_ticks);
+    if (alarm_is_on)
+    {
+        engine_on(&engine);
+        buzzer_work(&buzzer, handler_ticks);
+    }
 }

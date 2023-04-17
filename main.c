@@ -11,6 +11,8 @@
 #include <inc/engine.h>
 #include <inc/time.h>
 #include <inc/buzzer.h>
+#include <inc/exti.h>
+#include <inc/nvic.h>
 
 
 void board_clocking_init()
@@ -67,20 +69,45 @@ static void board_gpio_init()
     SET_GPIO_OTYPE(GPIOC, BLUE_LED_GPIOC_PIN, GPIO_OTYPE_PUSH_PULL);
 }
 
+static void interrupts_init()
+{
+    uint32_t line = 0;
+    LL_SYSCFG_SetEXTISource(0, line);
+    EXTI_INTERRUP_LINE_ON(line);
+    EXTI_ENABLE_RISING_TRIGGER(line);
+
+    NVIC_ENABLE_IRQ(0);
+    NVIC_SET_PRIORITY(0, 0);
+
+    return;
+}
+
 buzzer_t buzzer = {};
 engine_t engine = {};
+
+void EXTI0_1_HANDLER()
+{
+    if (IS_INTERRUPT_FROM_LINE(0))
+    {
+        buzzer_off(&buzzer);
+        engine_off(&engine);
+        buzzer.is_need = false;
+        engine.is_need = false;
+        CONTINUE_GET_INTERRUPT_FROM_LINE(0);
+    }
+}
 
 int main(void)
 {
     board_clocking_init();
     board_gpio_init();
     systick_init(SYSTICK_PERIOD_US);
+    interrupts_init();
 
     engine_init(&engine, GPIOC, 11);
 
     buzzer_init(&buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
-    
-    
+
     while (1)
     {
         more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
