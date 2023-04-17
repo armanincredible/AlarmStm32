@@ -13,6 +13,7 @@
 #include <inc/buzzer.h>
 #include <inc/exti.h>
 #include <inc/nvic.h>
+#include <inc/syscfg.h>
 
 
 void board_clocking_init()
@@ -69,30 +70,39 @@ static void board_gpio_init()
     SET_GPIO_OTYPE(GPIOC, BLUE_LED_GPIOC_PIN, GPIO_OTYPE_PUSH_PULL);
 }
 
+buzzer_t buzzer = {};
+engine_t engine = {};
+
 static void interrupts_init()
 {
+    default_input_pin_init(GPIOA, 0);
+
+    SET_BIT(REG_RCC_APB2ENR, REG_RCC_APB2ENR_SYSCFGCOMPEN);
+
     uint32_t line = 0;
     LL_SYSCFG_SetEXTISource(0, line);
     EXTI_INTERRUP_LINE_ON(line);
-    EXTI_ENABLE_RISING_TRIGGER(line);
+
+    SET_BIT(EXTI_RTSR, line);
+    SET_BIT(EXTI_FTSR, line);
+    //EXTI_ENABLE_RISING_TRIGGER(line);
 
     NVIC_ENABLE_IRQ(0);
     NVIC_SET_PRIORITY(0, 0);
+    CONTINUE_GET_INTERRUPT_FROM_LINE(0);
 
     return;
 }
 
-buzzer_t buzzer = {};
-engine_t engine = {};
-
 void EXTI0_1_HANDLER()
 {
+    engine_on(&engine);
     if (IS_INTERRUPT_FROM_LINE(0))
     {
-        buzzer_off(&buzzer);
-        engine_off(&engine);
-        buzzer.is_need = false;
-        engine.is_need = false;
+        //buzzer_off(&buzzer);
+        //engine_off(&engine);
+        //buzzer.is_need = false;
+        //engine.is_need = false;
         CONTINUE_GET_INTERRUPT_FROM_LINE(0);
     }
 }
@@ -101,12 +111,12 @@ int main(void)
 {
     board_clocking_init();
     board_gpio_init();
-    systick_init(SYSTICK_PERIOD_US);
-    interrupts_init();
-
     engine_init(&engine, GPIOC, 11);
-
     buzzer_init(&buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
+
+    interrupts_init();
+    SOFTWARE_INTERRUPT(0);
+    //systick_init(SYSTICK_PERIOD_US);
 
     while (1)
     {

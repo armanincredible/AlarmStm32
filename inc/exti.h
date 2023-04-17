@@ -3,19 +3,8 @@
 #include "modregs.h"
 #include <inttypes.h>
 
-
 /*Interrupt mask register*/
-#ifdef STM32F05X
-#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x0F940000
-#elif STM32F04X
-#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x7FF40000
-#elif STM32F03X 
-#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x0FF40000
-#elif STM32F07X || STM32F09X
-#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x7F840000
-#endif
-
-
+#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x40010400
 
 /*
     PA0 --------|
@@ -105,30 +94,3 @@ This bit is cleared by writing a 1 to the bit. */
                 CLEAR_BIT(EXTI_FTSR, line);                         \
         }while(0)
 
-#define SYSCFG         (volatile uint32_t*)(uintptr_t)0x40010000
-#define SYSCFG_EXTICR  (volatile uint32_t*)(uintptr_t)(SYSCFG + 0x08)
-
-typedef struct {
-    uint32_t CFGR1;    /* SYSCFG configuration register 1 */
-    uint32_t RESERVED0;
-    uint32_t EXTICR[4];  /* External interrupt configuration registers */
-    uint32_t CFGR2;    /* SYSCFG configuration register 2 */
-} SYSCFG_T;
-
-//#define MODIFY_REG(REG, MASK, VAL) \
-//  ((REG) = ((REG) & ~(MASK)) | ((VAL) & (MASK)))
-
-#define POSITION_VAL(VAL) (__CLZ(__RBIT(VAL)))
-
-void LL_SYSCFG_SetEXTISource(uint32_t Port, uint32_t Line)    
-{
-  uint32_t cr_num, cr_offset;
-  
-  /* Calculate the EXTI_CR register number and offset based on the EXTI line */
-    cr_num = Line / 4;
-    cr_offset = (Line % 4) * 4;
-
-    SYSCFG_T* syscfg = (SYSCFG_T*)SYSCFG;
-    syscfg->EXTICR[cr_num] &= ~(0xF << cr_offset);
-    syscfg->EXTICR[cr_num] |= Port << cr_offset;
-}

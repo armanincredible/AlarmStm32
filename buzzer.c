@@ -1,5 +1,5 @@
 #include "inc/buzzer.h"
-#include <inc/pin.h>
+#include <inc/gpio.h>
 #include <stdio.h>
 
 void buzzer_init(buzzer_t* buzzer, int port, int pin, unsigned freq, unsigned tick_freq)

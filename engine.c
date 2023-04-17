@@ -1,5 +1,5 @@
 #include <inc/engine.h>
-#include <inc/pin.h>
+#include <inc/gpio.h>
 #include <stdbool.h>
 
 void engine_init(engine_t* engine, int port, int pin)
