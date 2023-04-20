@@ -4,7 +4,8 @@
 #include <inttypes.h>
 
 /*Interrupt mask register*/
-#define EXTI_IMR (volatile uint32_t*)(uintptr_t)0x40010400
+#define EXTI_IMR_REGISTER (volatile uint32_t*)(uintptr_t)0x40010400
+#define EXTI_IMR 0x40010400
 
 /*
     PA0 --------|
@@ -53,8 +54,8 @@
 
 
 /*enable interrupt on line (32 lines and only first 16 with programming handler)*/
-#define EXTI_INTERRUP_LINE_ON(line) SET_BIT(EXTI_IMR, line)
-#define IS_EXTI_INTERRUPT_LINE_ON(line) CHECK_BIT(EXTI_IMR, line)
+#define EXTI_INTERRUP_LINE_ON(line) SET_BIT(EXTI_IMR_REGISTER, line)
+#define IS_EXTI_INTERRUPT_LINE_ON(line) CHECK_BIT(EXTI_IMR_REGISTER, line)
 
 /*enable event*/
 #define EXTI_EVENT_LINE_ON(line) SET_BIT(EXTI_EMR, line)

@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-#define SYSCFG         (volatile uint32_t*)(uintptr_t)0x40010000
+#define SYSCFG         0x40010000U
 #define SYSCFG_EXTICR  (volatile uint32_t*)(uintptr_t)(SYSCFG + 0x08)
 
 typedef struct {
@@ -12,8 +12,6 @@ typedef struct {
     uint32_t CFGR2;    /* SYSCFG configuration register 2 */
 } SYSCFG_T;
 
-//#define MODIFY_REG(REG, MASK, VAL) \
-//  ((REG) = ((REG) & ~(MASK)) | ((VAL) & (MASK)))
 
 #define POSITION_VAL(VAL) (__CLZ(__RBIT(VAL)))
 

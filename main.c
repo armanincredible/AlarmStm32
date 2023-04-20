@@ -73,8 +73,11 @@ static void board_gpio_init()
 buzzer_t buzzer = {};
 engine_t engine = {};
 
+
 static void interrupts_init()
 {
+    __asm__ volatile ("cpsie i");
+
     default_input_pin_init(GPIOA, 0);
 
     SET_BIT(REG_RCC_APB2ENR, REG_RCC_APB2ENR_SYSCFGCOMPEN);
@@ -92,18 +95,33 @@ static void interrupts_init()
     CONTINUE_GET_INTERRUPT_FROM_LINE(0);
 
     return;
+
 }
 
 void EXTI0_1_HANDLER()
 {
     engine_on(&engine);
+    while(1)
+    {
+        GPIO_BSRR_SET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        
+        GPIO_BRR_RESET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
+
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+        more_precise_delay_forbidden_by_quantum_mechanics_1000ms();
+    }
+    GPIO_BSRR_SET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
     if (IS_INTERRUPT_FROM_LINE(0))
     {
         //buzzer_off(&buzzer);
         //engine_off(&engine);
         //buzzer.is_need = false;
         //engine.is_need = false;
-        CONTINUE_GET_INTERRUPT_FROM_LINE(0);
+        //CONTINUE_GET_INTERRUPT_FROM_LINE(0);
     }
 }
 

@@ -180,4 +180,6 @@ static inline int default_input_pin_init(unsigned int port, unsigned int pin)
 
     SET_GPIO_IOMODE(port, pin, GPIO_IOMODE_INPUT);
     SET_GPIO_PUPD(port, pin, GPIO_PUPD_PU);
+
+    return 0;
 }

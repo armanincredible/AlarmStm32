@@ -82,6 +82,21 @@ GDB_FLAGS = \
 	--eval-command="target remote localhost:1234" \
 	--eval-command="file $(EXECUTABLE_FLASH)"
 
+QEMU_FLAGS = \
+	-machine STM32F051-Discovery \
+	-cpu cortex-m0 \
+	-kernel $(EXECUTABLE_FLASH) \
+	-serial stdio \
+	-m 32M \
+	-icount 1 \
+	-gdb tcp::1234
+
+GDB_FLAGS = \
+	--eval-command="set architecture arm" \
+	--eval-command="set gnutarget elf32-littlearm" \
+	--eval-command="target remote localhost:1234" \
+	--eval-command="file $(EXECUTABLE_FLASH)"
+
 flash: FORCE $(BINARY_FLASH)
 	st-flash write $(BINARY_FLASH) 0x08000000
 
@@ -90,6 +105,9 @@ hardware: FORCE $(EXECUTABLE_FLASH)
 
 gdb: FORCE $(BINARY_FLASH)
 	arm-none-eabi-gdb $(GDB_FLAGS)
+
+qemu :  $(EXECUTABLE_FLASH)
+	qemu-system-gnuarmeclipse $(QEMU_FLAGS)
 
 uart: FORCE
 	- rm -f minicom.log 

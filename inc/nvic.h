@@ -69,7 +69,7 @@ typedef struct
 #define NVIC_ENABLE_IRQ(line) SET_BIT(NVIC_ISER, line)
 
 
-static void inline NVIC_SET_PRIORITY(uint32_t IRQn, uint32_t priority)
+static inline void NVIC_SET_PRIORITY(uint32_t IRQn, uint32_t priority)
 {
 
     if ((int32_t)(IRQn) < 0)
