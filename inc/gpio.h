@@ -4,6 +4,7 @@
 
 #include "modregs.h"
 #include "rcc.h"
+#include "stdint.h"
 
 //=========================================================
 
@@ -188,7 +189,7 @@ static inline int default_input_pin_init(unsigned int port, unsigned int pin)
     SET_BIT(REG_RCC_AHBENR, bit);
 
     SET_GPIO_IOMODE(port, pin, GPIO_IOMODE_INPUT);
-    SET_GPIO_PUPD(port, pin, GPIO_PUPD_PU);
+    SET_GPIO_PUPD(port, pin, GPIO_PUPD_PD);
 
     return 0;
 }

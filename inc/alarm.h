@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "gpio.h"
 #include "time.h"
+#include "seg.h"
 
 typedef struct Alarm
 {
@@ -13,4 +14,5 @@ typedef struct Alarm
     time_t   time;
     time_t   time_alarm;
     gpio_t   button_analog;
+    seg7d_t  seg7;
 }alarm_t;

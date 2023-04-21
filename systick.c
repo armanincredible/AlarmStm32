@@ -6,6 +6,7 @@
 #include <inc\engine.h>
 #include <inc\alarm.h>
 #include <inc\gpio.h>
+#include <inc\seg.h>
 
 #include <string.h>
 
@@ -73,7 +74,7 @@ void systick_handler(void)
     int ticks_in_second = US_IN_S / SYSTICK_PERIOD_US;
 
     handler_ticks += 1U;
-    static bool alarm_is_on = true;
+    static bool alarm_is_on = false;
 
     if (handler_ticks == ticks_in_second)
     {
@@ -92,10 +93,10 @@ void systick_handler(void)
         alarm.time.hours += 1;
     }
 
-    /*if (!memcmp(&alarm.time, &alarm.time_alarm, sizeof (time_t)))
+    if (alarm.time.seconds == alarm.time_alarm.seconds)
     {
         alarm_is_on = true;
-    }*/
+    }
 
     get_info_from_gpio_pin(&alarm.button_analog);
     if (alarm.button_analog.arg)
@@ -109,4 +110,8 @@ void systick_handler(void)
         engine_on(&alarm.engine);
         buzzer_work(&alarm.buzzer, handler_ticks);
     }
+
+    alarm.seg7.number = (alarm.time_alarm.hours - alarm.time.hours) * 100 + alarm.time_alarm.minutes - alarm.time.minutes;
+    seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
+    seg7_push_display_state_to_mc(&alarm.seg7);
 }

@@ -82,14 +82,16 @@ int main(void)
     board_gpio_init();
     engine_init(&alarm.engine, GPIOC, 11);
     buzzer_init(&alarm.buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
+    seg7_setup(&alarm.seg7, GPIOA);
 
-    alarm.time_alarm.seconds = 1;
-    alarm.time_alarm.minutes = 0;
-    alarm.time_alarm.hours = 0;
+    alarm.time_alarm.seconds = 5;
+    alarm.time_alarm.minutes = 10;
+    alarm.time_alarm.hours = 14;
 
     //interrupts_init();
     alarm.button_analog.GPIOx = GPIOA;
     alarm.button_analog.pin = 0;
+    alarm.button_analog.arg = 0;
     default_input_pin_init(alarm.button_analog.GPIOx, alarm.button_analog.pin);
     systick_init(SYSTICK_PERIOD_US);
 
