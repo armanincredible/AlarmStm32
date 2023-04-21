@@ -74,19 +74,21 @@ static void board_gpio_init()
 
 alarm_t alarm = {};
 
-
+#include <string.h>
 
 int main(void)
 {
     board_clocking_init();
     board_gpio_init();
+
+    memset(&alarm, 0, sizeof(alarm_t));
     engine_init(&alarm.engine, GPIOC, 11);
     buzzer_init(&alarm.buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
     seg7_setup(&alarm.seg7, GPIOA);
 
     alarm.time_alarm.seconds = 5;
-    alarm.time_alarm.minutes = 10;
-    alarm.time_alarm.hours = 14;
+    alarm.time_alarm.minutes = 0;
+    alarm.time_alarm.hours = 0;
 
     //interrupts_init();
     alarm.button_analog.GPIOx = GPIOA;

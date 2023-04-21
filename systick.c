@@ -79,6 +79,7 @@ void systick_handler(void)
     if (handler_ticks == ticks_in_second)
     {
         alarm.time.seconds += 1;
+        handler_ticks = 0;
     }
 
     if (alarm.time.seconds == 60)
@@ -93,7 +94,7 @@ void systick_handler(void)
         alarm.time.hours += 1;
     }
 
-    if (alarm.time.seconds == alarm.time_alarm.seconds)
+    if (!memcmp(&alarm.time, &alarm.time_alarm, sizeof(time_t)))
     {
         alarm_is_on = true;
     }
@@ -101,17 +102,20 @@ void systick_handler(void)
     get_info_from_gpio_pin(&alarm.button_analog);
     if (alarm.button_analog.arg)
     {
+        GPIO_BRR_RESET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
         alarm_is_on = false;
         engine_off(&alarm.engine);
     }
 
     if (alarm_is_on)
     {
+        GPIO_BSRR_SET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
         engine_on(&alarm.engine);
         buzzer_work(&alarm.buzzer, handler_ticks);
     }
 
     alarm.seg7.number = (alarm.time_alarm.hours - alarm.time.hours) * 100 + alarm.time_alarm.minutes - alarm.time.minutes;
+    //alarm.seg7.number = (alarm.time.minutes) * 100 + alarm.time.seconds;
     seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
     seg7_push_display_state_to_mc(&alarm.seg7);
 }
