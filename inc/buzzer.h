@@ -1,11 +1,11 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
+#include "gpio.h"
 
 typedef struct Buzzer
 {
-    uint32_t GPIOx;
-    uint8_t pin;
+    gpio_t gpio;
 
     unsigned freq;
     unsigned tick_freq;

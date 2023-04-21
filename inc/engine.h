@@ -1,11 +1,11 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
+#include "gpio.h"
 
 typedef struct Engine
 {
-    uint32_t GPIOx;
-    uint8_t pin;
+    gpio_t gpio;
 
     bool is_need;
 }engine_t;

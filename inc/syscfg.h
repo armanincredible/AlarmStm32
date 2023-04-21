@@ -15,7 +15,7 @@ typedef struct {
 
 #define POSITION_VAL(VAL) (__CLZ(__RBIT(VAL)))
 
-void LL_SYSCFG_SetEXTISource(uint32_t Port, uint32_t Line)    
+static inline void LL_SYSCFG_SetEXTISource(uint32_t Port, uint32_t Line)    
 {
   uint32_t cr_num, cr_offset;
   

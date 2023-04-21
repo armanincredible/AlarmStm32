@@ -150,6 +150,15 @@
                                                         \
     } while(0);
 
+
+
+typedef struct GPIO
+{
+    uint32_t GPIOx;
+    uint8_t pin;
+    uint32_t arg;
+}gpio_t;
+
 static inline int default_output_pin_init(unsigned int port, unsigned int pin)
 {
     if (port < GPIOA || port > GPIOF)
@@ -180,6 +189,45 @@ static inline int default_input_pin_init(unsigned int port, unsigned int pin)
 
     SET_GPIO_IOMODE(port, pin, GPIO_IOMODE_INPUT);
     SET_GPIO_PUPD(port, pin, GPIO_PUPD_PU);
+
+    return 0;
+}
+
+#define BLUE_LED_GPIOC_PIN  8U
+#define GREEN_LED_GPIOC_PIN 9U
+
+#include <stdbool.h>
+#include <stdlib.h>
+
+static const uint32_t Saturation_max  = 12U;
+static const uint32_t Top_edge = 10U;
+static const uint32_t Btm_edge = 2U;
+
+static inline int get_info_from_gpio_pin(gpio_t* gpio)
+{
+    if (gpio == NULL)
+        return -1;
+
+    bool active = (bool) GPIO_IDR_GET_PIN(gpio->GPIOx, gpio->pin);
+
+    static int saturation = 0;
+
+    if (active == true)
+    {
+        if (saturation < Saturation_max)
+            saturation += 1;
+
+        if (saturation >= Top_edge)
+            gpio->arg = true;
+    }
+    else 
+    {
+        if (saturation > 0U)
+            saturation -= 1;
+
+        if (saturation <= Btm_edge)
+            gpio->arg = false;
+    }
 
     return 0;
 }

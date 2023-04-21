@@ -7,13 +7,13 @@ void buzzer_init(buzzer_t* buzzer, int port, int pin, unsigned freq, unsigned ti
     if (!buzzer)
         return;
     
-    buzzer->GPIOx = port;
-    buzzer->pin   = pin;
+    buzzer->gpio.GPIOx = port;
+    buzzer->gpio.pin   = pin;
     buzzer->tick_freq = tick_freq;
     buzzer->freq   = freq;
     buzzer->is_need   = true;
 
-    default_output_pin_init(buzzer->GPIOx, buzzer->pin);
+    default_output_pin_init(buzzer->gpio.GPIOx, buzzer->gpio.pin);
     
     return;
 }
@@ -23,7 +23,7 @@ void buzzer_off(buzzer_t* buzzer)
     if (!buzzer->is_need)
         return;
 
-    GPIO_BRR_RESET_PIN(buzzer->GPIOx, buzzer->pin);
+    GPIO_BRR_RESET_PIN(buzzer->gpio.GPIOx, buzzer->gpio.pin);
     buzzer->state = false;
 }
 
@@ -44,12 +44,12 @@ void buzzer_work(buzzer_t* buzzer, unsigned tick)
     {
         if (buzzer->state == false)
         {
-            GPIO_BSRR_SET_PIN(buzzer->GPIOx, buzzer->pin);
+            GPIO_BSRR_SET_PIN(buzzer->gpio.GPIOx, buzzer->gpio.pin);
             buzzer->state = true;
         }
         else 
         {
-            GPIO_BRR_RESET_PIN(buzzer->GPIOx, buzzer->pin);
+            GPIO_BRR_RESET_PIN(buzzer->gpio.GPIOx, buzzer->gpio.pin);
             buzzer->state = false;
         }
     }

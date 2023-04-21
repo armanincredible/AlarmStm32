@@ -4,6 +4,10 @@
 #include <inc\systick.h>
 #include <inc\buzzer.h>
 #include <inc\engine.h>
+#include <inc\alarm.h>
+#include <inc\gpio.h>
+
+#include <string.h>
 
 void systick_init(uint32_t period_us)
 {
@@ -58,23 +62,51 @@ void systick_init(uint32_t period_us)
     SYSTICK_ENABLE();
 }
 
-extern buzzer_t buzzer;
-extern engine_t engine;
+extern alarm_t alarm;
+
+const int US_IN_S = 1e6;
 
 void systick_handler(void)
 {
     static uint64_t handler_ticks = 0U;
-    handler_ticks += 1U;
-    static bool alarm_is_on = false;
 
-    if (handler_ticks == 100000)
+    int ticks_in_second = US_IN_S / SYSTICK_PERIOD_US;
+
+    handler_ticks += 1U;
+    static bool alarm_is_on = true;
+
+    if (handler_ticks == ticks_in_second)
+    {
+        alarm.time.seconds += 1;
+    }
+
+    if (alarm.time.seconds == 60)
+    {
+        alarm.time.seconds = 0;
+        alarm.time.minutes += 1;
+    }
+
+    if (alarm.time.minutes == 60)
+    {
+        alarm.time.minutes = 0;
+        alarm.time.hours += 1;
+    }
+
+    /*if (!memcmp(&alarm.time, &alarm.time_alarm, sizeof (time_t)))
     {
         alarm_is_on = true;
+    }*/
+
+    get_info_from_gpio_pin(&alarm.button_analog);
+    if (alarm.button_analog.arg)
+    {
+        alarm_is_on = false;
+        engine_off(&alarm.engine);
     }
 
     if (alarm_is_on)
     {
-        engine_on(&engine);
-        buzzer_work(&buzzer, handler_ticks);
+        engine_on(&alarm.engine);
+        buzzer_work(&alarm.buzzer, handler_ticks);
     }
 }
