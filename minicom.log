@@ -1,0 +1,112 @@
+UART ready!
+12
+got message: 12
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 12
+___________________UART ready!
+UART ready!
+12
+got message: 12
+appended at the end
+10
+got message: 10
+appended between
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 10
+1) 12
+___________________UART ready!
+100
+got message: 100
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 100
+___________________UART ready!
+10000
+got message: 10000
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 10000
+___________________UART ready!
+10000000
+got message: 10000000
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 10000000
+___________________UART ready!
+UART ready!
+100000
+got message: 100000
+appended at the end
+UART ready!
+1000
+got message: 1000
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 1000
+___________________UART ready!
+10000
+got message: 10000
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 10000
+___________________UART ready!
+50000
+got message: 50000
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 50000
+___________________UART ready!
+100
+got message: 100
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 100
+___________________UART ready!
+UART ready!
+10
+got message: 10
+appended at the end
+
+finished
+.__________________.
+|   TIMERS DUMP    |
+|__________________|
+0) 10
+___________________

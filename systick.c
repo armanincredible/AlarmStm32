@@ -1,13 +1,13 @@
 #include <stdint.h>
-#include <inc\time.h>
+#include <inc/time.h>
 #include <stdbool.h>
-#include <inc\systick.h>
-#include <inc\buzzer.h>
-#include <inc\engine.h>
-#include <inc\alarm.h>
-#include <inc\gpio.h>
-#include <inc\seg.h>
-
+#include <inc/systick.h>
+#include <inc/buzzer.h>
+#include <inc/engine.h>
+#include <inc/alarm.h>
+#include <inc/gpio.h>
+#include <inc/seg.h>
+#include <timers.h>
 #include <string.h>
 
 void systick_init(uint32_t period_us)
@@ -69,35 +69,20 @@ const int US_IN_S = 1e6;
 
 void systick_handler(void)
 {
-    static uint64_t handler_ticks = 0U;
+    static bool alarm_is_on = false;
+   	static uint64_t handler_ticks = 0U;
 
     int ticks_in_second = US_IN_S / SYSTICK_PERIOD_US;
 
-    handler_ticks += 1U;
-    static bool alarm_is_on = false;
+    handler_ticks++;
 
-    if (handler_ticks == ticks_in_second)
-    {
-        alarm.time.seconds += 1;
+    if (handler_ticks >= ticks_in_second) {
+	 	alarm.time++;
         handler_ticks = 0;
-    }
+	}
 
-    if (alarm.time.seconds == 60)
-    {
-        alarm.time.seconds = 0;
-        alarm.time.minutes += 1;
-    }
+    alarm_is_on = proccess_timeout(&alarm);
 
-    if (alarm.time.minutes == 60)
-    {
-        alarm.time.minutes = 0;
-        alarm.time.hours += 1;
-    }
-
-    if (!memcmp(&alarm.time, &alarm.time_alarm, sizeof(time_t)))
-    {
-        alarm_is_on = true;
-    }
 
     get_info_from_gpio_pin(&alarm.button_analog);
     if (alarm.button_analog.arg)
@@ -114,7 +99,11 @@ void systick_handler(void)
         buzzer_work(&alarm.buzzer, handler_ticks);
     }
 
-    alarm.seg7.number = (alarm.time_alarm.hours - alarm.time.hours) * 100 + alarm.time_alarm.minutes - alarm.time.minutes;
+    time_t alarmt, curtime;
+    alarmt = get_closest_hhmmss((struct alarm_time *)alarm.time_head);
+    time_to_hhmmss(alarm.time, &curtime);
+
+
     //alarm.seg7.number = (alarm.time.minutes) * 100 + alarm.time.seconds;
     seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
     seg7_push_display_state_to_mc(&alarm.seg7);

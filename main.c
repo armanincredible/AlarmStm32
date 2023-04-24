@@ -16,7 +16,10 @@
 #include <inc/syscfg.h>
 #include <inc/interrupt.h>
 #include <inc/alarm.h>
+#include <timers.h>
 
+
+#define UART_BAUDRATE 9600U
 
 void board_clocking_init()
 {
@@ -52,6 +55,8 @@ void board_clocking_init()
 
     // (8) Set APB frequency to 24 MHz
     SET_REG_RCC_CFGR_PPRE(REG_RCC_CFGR_PPRE_DIV_2);
+
+    //SET_REG_RCC_CFGR_PPRE(REG_RCC_CFGR_PPRE_NOT_DIV);
 }
 
 //--------------------
@@ -72,6 +77,34 @@ static void board_gpio_init()
     SET_GPIO_OTYPE(GPIOC, BLUE_LED_GPIOC_PIN, GPIO_OTYPE_PUSH_PULL);
 }
 
+static int uart_conf(struct Uart *uart)
+{
+	struct Port_n_pin tx = {.port = GPIOA, .pin = 9U};
+	struct Port_n_pin rx = {.port = GPIOA, .pin = 10U};
+
+	uint8_t tx_af = GPIO_AF1; 
+	uint8_t rx_af = GPIO_AF1;
+
+	int r = uart_setup(uart, 1, &tx, GPIO_AF1, &rx, GPIO_AF1, UART_BAUDRATE, CPU_FREQENCY / 2);
+	// TODO FIX TO FREQUENCY
+
+	if (r < 0)
+		return r;
+
+	r = uart_transmit_enable(uart);
+	if (r < 0) 
+		return r;
+
+
+	r = uart_receive_enable(uart);
+	if (r < 0) 
+		return r;
+
+	r = uart_send_string(uart, "UART ready!\r", 1);
+	if (r < 0) 
+		return r;
+}
+
 alarm_t alarm = {};
 
 #include <string.h>
@@ -81,14 +114,25 @@ int main(void)
     board_clocking_init();
     board_gpio_init();
 
+    struct Uart uart = {};
+    if (uart_conf(&uart))
+	    return -1;
+
     memset(&alarm, 0, sizeof(alarm_t));
+
+    time_t t = {};
+    alarm.time_head = (struct List *)init_alarm_timers(&uart);
+    dump_timer_list((struct alarm_time *)alarm.time_head, &uart);
+
     engine_init(&alarm.engine, GPIOC, 11);
     buzzer_init(&alarm.buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
     seg7_setup(&alarm.seg7, GPIOA);
 
+#if 0
     alarm.time_alarm.seconds = 5;
     alarm.time_alarm.minutes = 0;
     alarm.time_alarm.hours = 0;
+#endif
 
     //interrupts_init();
     alarm.button_analog.GPIOx = GPIOA;
