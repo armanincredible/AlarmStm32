@@ -76,12 +76,12 @@ void systick_handler(void)
 
     handler_ticks++;
 
-    if (handler_ticks == ticks_in_second) {
+    if (handler_ticks >= ticks_in_second) {
 	 	alarm.time++;
 		handler_ticks = 0;
 	}
 
-    alarm_is_on = proccess_timeout(&alarm);
+    alarm_is_on |= proccess_timeout(&alarm);
 
 
     get_info_from_gpio_pin(&alarm.button_analog);
@@ -105,6 +105,8 @@ void systick_handler(void)
 
 
     alarm.seg7.number = (alarmt.hours - curtime.hours) * 100 + alarmt.minutes - curtime.minutes;
+    if (alarm.seg7.number < 0)
+	alarm.seg7.number = 0;
     seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
     seg7_push_display_state_to_mc(&alarm.seg7);
 }
