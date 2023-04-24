@@ -87,14 +87,12 @@ void systick_handler(void)
     get_info_from_gpio_pin(&alarm.button_analog);
     if (alarm.button_analog.arg)
     {
-        GPIO_BRR_RESET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
         alarm_is_on = false;
         engine_off(&alarm.engine);
     }
 
     if (alarm_is_on)
     {
-        GPIO_BSRR_SET_PIN(GPIOC, GREEN_LED_GPIOC_PIN);
         engine_on(&alarm.engine);
         buzzer_work(&alarm.buzzer, handler_ticks);
     }
@@ -106,7 +104,7 @@ void systick_handler(void)
 
     alarm.seg7.number = (alarmt.hours - curtime.hours) * 100 + alarmt.minutes - curtime.minutes;
     if (alarm.seg7.number < 0)
-	alarm.seg7.number = 0;
+		alarm.seg7.number = 0;
     seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
     seg7_push_display_state_to_mc(&alarm.seg7);
 }
