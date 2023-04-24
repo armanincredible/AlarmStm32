@@ -17,9 +17,7 @@
 #include <inc/interrupt.h>
 #include <inc/alarm.h>
 #include <timers.h>
-
-
-#define UART_BAUDRATE 9600U
+#include <string.h>
 
 void board_clocking_init()
 {
@@ -77,6 +75,8 @@ static void board_gpio_init()
     SET_GPIO_OTYPE(GPIOC, BLUE_LED_GPIOC_PIN, GPIO_OTYPE_PUSH_PULL);
 }
 
+#define UART_BAUDRATE 9600U
+
 static int uart_conf(struct Uart *uart)
 {
 	struct Port_n_pin tx = {.port = GPIOA, .pin = 9U};
@@ -106,8 +106,6 @@ static int uart_conf(struct Uart *uart)
 }
 
 alarm_t alarm = {};
-
-#include <string.h>
 
 int main(void)
 {
