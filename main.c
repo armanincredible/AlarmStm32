@@ -114,19 +114,28 @@ int main(void)
     board_clocking_init();
     board_gpio_init();
 
+    memset(&alarm, 0, sizeof(alarm_t));
+    
+
     struct Uart uart = {};
+#define UART_SUPP
+#ifdef UART_SUPP
     if (uart_conf(&uart))
 	    return -1;
 
-    memset(&alarm, 0, sizeof(alarm_t));
 
     time_t t = {};
     alarm.time_head = (struct List *)init_alarm_timers(&uart);
-    dump_timer_list((struct alarm_time *)alarm.time_head, &uart);
 
-    engine_init(&alarm.engine, GPIOC, 11);
-    buzzer_init(&alarm.buzzer, GPIOC, 5, 1000 /*freq*/, SYSTICK_FREQ);
-    seg7_setup(&alarm.seg7, GPIOA);
+    dump_timer_list((struct alarm_time *)alarm.time_head, &uart);
+#else 
+	alarm.time_head = dummy_test();
+#endif
+
+
+    engine_init(&alarm.engine, GPIOC, 15);
+    buzzer_init(&alarm.buzzer, GPIOC, 14, 1000 /*freq*/, SYSTICK_FREQ);
+    seg7_setup(&alarm.seg7, GPIOC);
 
 #if 0
     alarm.time_alarm.seconds = 5;

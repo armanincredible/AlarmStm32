@@ -170,6 +170,16 @@ static char *itoa(int num, char *str)
 	return str;
 }
 
+struct List *dummy_test()
+{
+	static struct alarm_time at1, at2;
+	at1.time = 5;
+	at2.time = 10;
+
+	list_init(&head);
+	list_append(&head, (struct List *)&at1);
+	list_append((struct List *)&at1, (struct List *)&at2);
+}
 
 void dump_timer_list(struct alarm_time *head, struct Uart *uart)
 {
@@ -242,7 +252,7 @@ bool proccess_timeout(alarm_t *alarm)
 		return 0;
 
 	if (list_empty(alarm->time_head))
-		return 1;
+		return 0;
 
 	struct List *lentry = alarm->time_head->next;
 	struct alarm_time *at = (struct alarm_time *)(lentry);

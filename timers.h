@@ -31,4 +31,5 @@ time_t get_closest_hhmmss(struct alarm_time *head);
 void time_to_hhmmss(uint64_t t, time_t *time);
 uint64_t time_to_sec(time_t *t);
 void dump_timer_list(struct alarm_time *head, struct Uart *uart);
+struct List *dummy_test();
 #endif // TIMERS_H

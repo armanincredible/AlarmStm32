@@ -76,9 +76,9 @@ void systick_handler(void)
 
     handler_ticks++;
 
-    if (handler_ticks >= ticks_in_second) {
+    if (handler_ticks == ticks_in_second) {
 	 	alarm.time++;
-        handler_ticks = 0;
+		handler_ticks = 0;
 	}
 
     alarm_is_on = proccess_timeout(&alarm);
@@ -104,7 +104,7 @@ void systick_handler(void)
     time_to_hhmmss(alarm.time, &curtime);
 
 
-    //alarm.seg7.number = (alarm.time.minutes) * 100 + alarm.time.seconds;
+    alarm.seg7.number = (alarmt.hours - curtime.hours) * 100 + alarmt.minutes - curtime.minutes;
     seg7_select_digit(&alarm.seg7, (handler_ticks % 4));
     seg7_push_display_state_to_mc(&alarm.seg7);
 }
