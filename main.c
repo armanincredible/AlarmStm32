@@ -116,7 +116,7 @@ int main(void)
     
 
     struct Uart uart = {};
-#define UART_SUPP
+
 #ifdef UART_SUPP
     if (uart_conf(&uart))
 	    return -1;
@@ -146,6 +146,11 @@ int main(void)
     alarm.button_analog.pin = 0;
     alarm.button_analog.arg = 0;
     default_input_pin_init(alarm.button_analog.GPIOx, alarm.button_analog.pin);
+
+    alarm.wire.GPIOx = GPIOA;
+    alarm.wire.pin = 1;
+    alarm.wire.arg = 0;
+    default_input_pin_init(alarm.wire.GPIOx, alarm.wire.pin);
     systick_init(SYSTICK_PERIOD_US);
 
     while (1)

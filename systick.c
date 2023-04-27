@@ -84,8 +84,8 @@ void systick_handler(void)
     alarm_is_on |= proccess_timeout(&alarm);
 
 
-    get_info_from_gpio_pin(&alarm.button_analog);
-    if (alarm.button_analog.arg)
+    get_info_from_gpio_pin(&alarm.wire);
+    if (alarm.wire.arg)
     {
         alarm_is_on = false;
         engine_off(&alarm.engine);

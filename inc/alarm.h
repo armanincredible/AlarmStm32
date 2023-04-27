@@ -16,5 +16,6 @@ typedef struct Alarm
     uint64_t   time;
     struct List *time_head; /* list head, first time is time_head->next*/
     gpio_t   button_analog;
+    gpio_t   wire;
     seg7d_t  seg7;
 }alarm_t;
